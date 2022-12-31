@@ -1,37 +1,43 @@
 class Solution {
 public:
     int uniquePathsIII(vector<vector<int>>& grid) {
-        int num_zeros = 0, start_row = 0, start_col = 0;
-        for (int row = 0; row < grid.size(); row++) {
-            for (int col = 0; col < grid[0].size(); col++) {
-                if (grid[row][col] == 0) {
-                    num_zeros++;
-                } else if (grid[row][col] == 1) {
-                    start_row = row;
-                    start_col = col;
+        int numRows = grid.size(), numCols = grid[0].size(), startRow = 0, startCol = 0, remainingSpaces = 1, result = 0;
+        for (int row = 0; row < numRows; ++row) {
+            for (int col = 0; col < numCols; ++col) {
+                if (grid[row][col] == 1) {
+                    startRow = row; startCol = col;
+                } else if (grid[row][col] == 0) {
+                    ++remainingSpaces;
                 }
             }
         }
-        return findPaths(grid, start_row, start_col, num_zeros);
-    }
-
-    int findPaths(vector<vector<int>>& grid, int row, int col, int num_zeros) {
-        if (row < 0 || col < 0 || row >= grid.size() || col >= grid[0].size() || grid[row][col] == -1) {
-        return 0;
+        findPaths(grid, remainingSpaces, startRow, startCol, result);
+            return result;
         }
+    void findPaths(vector<vector<int>>& grid, int& remainingSpaces, int row, int col, int& result) {
+        int numRows = grid.size(), numCols = grid[0].size();
+        if (row < 0 || row >= numRows || col < 0 || col >= numCols || grid[row][col] < 0) return;
         if (grid[row][col] == 2) {
-            return num_zeros == -1 ? 1 : 0;
+            if (remainingSpaces == 0) ++result;
+            return;
         }
-        grid[row][col] = -1;
-        num_zeros--;
-        int total_count = findPaths(grid, row + 1, col, num_zeros) + findPaths(grid, row, col + 1, num_zeros) +
-                        findPaths(grid, row - 1, col, num_zeros) + findPaths(grid, row, col - 1, num_zeros);
-    grid[row][col] = 0;
-        num_zeros++;
-
-        return total_count;
-    }    
+        grid[row][col] = -2;
+        --remainingSpaces;
+        findPaths(grid, remainingSpaces, row + 1, col, result);
+        findPaths(grid, remainingSpaces, row - 1, col, result);
+        findPaths(grid, remainingSpaces, row, col + 1, result);
+        findPaths(grid, remainingSpaces, row, col - 1, result);
+        grid[row][col] = 0;
+        ++remainingSpaces;
+    }
 };
+
+
+
+
+
+
+
 
 
 
